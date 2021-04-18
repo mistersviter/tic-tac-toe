@@ -2,6 +2,27 @@
     const clickSound = document.querySelector('.clickSound')
     const cell = document.querySelector('.cell');
     const cellSize = cell.offsetWidth;
+    const fieldElements = document.querySelectorAll('.svg-container');
+    const fieldSize = fieldElements.length;
+    const fieldLength = Math.sqrt(fieldSize);
+    let row = 0;
+    let column = -1;
+    let rowCounter = -1;
+    let cellValueArray = new Array(fieldLength).fill(0).map(() => new Array(fieldLength).fill(0));
+    for (let i = 0; i < fieldSize; i++) {
+        rowCounter += 1;
+        column += 1;
+        if (rowCounter == fieldLength) {
+            rowCounter = 0;
+            row += 1;
+        }
+        if (column == fieldLength) {
+            column = 0;
+        }
+        fieldElements[i].dataset.row = row; 
+        fieldElements[i].dataset.column = column;
+        cellValueArray[row][column] = fieldElements[i].dataset.value 
+    }
     document.addEventListener('click', e => {
     const parent = e.target;
     let player;
@@ -11,13 +32,17 @@
         clickSound.play();
         if (player == 'player1') {
         drawCross(parent, cellSize);
-        parent.classList.add('with-cross');
+        parent.dataset.value = "cross"
+        cellValueArray[parent.dataset.row][parent.dataset.column] = "cross"
         } else {
         drawZero(parent, cellSize);
-        parent.classList.add('with-zero');
+        parent.dataset.value = "zero"
+        cellValueArray[parent.dataset.row][parent.dataset.column] = "zero"
         }
         parent.classList.add('used');
+        cellValueArray.push()
         playerCounter += 1;
+        winCheck(player);
     }
 })
 function drawCross(parent, cellSize) {
@@ -48,4 +73,31 @@ function drawZero(parent, cellSize) {
     zero.setAttribute("fill", "none");
     zero.setAttribute("stroke-width", "8px");
     parent.append(zero);
+}
+function winCheck(player) {
+    let rowSum;
+    const crossStr = 'cross';
+    const zeroStr = 'zero';
+    const crossWins = crossStr.repeat(fieldLength);
+    const zeroWins = zeroStr.repeat(fieldLength);  
+    let diagonalsMainSum = '';
+    let diagonalsSecondarySum = '';
+    for (let i = 0; i < cellValueArray.length; i++) {
+        rowSum = '';
+        columnSum = '';
+        for (let j = 0; j < cellValueArray[i].length; j++) {
+            rowSum += cellValueArray[i][j];
+            columnSum += cellValueArray[j][i];
+        } 
+        diagonalsMainSum += cellValueArray[i][i];
+        diagonalsSecondarySum += cellValueArray[i][cellValueArray.length-i-1];     
+        if (rowSum == crossWins || diagonalsMainSum == crossWins || diagonalsSecondarySum == crossWins || columnSum == crossWins) {            
+            alert('Player1 WIN');
+            break;
+        }
+        if (rowSum == zeroWins || diagonalsMainSum == zeroWins || diagonalsSecondarySum == zeroWins || columnSum == zeroWins) {            
+            alert('Player2 WIN');  
+            break;
+        }    
+    }  
 }
