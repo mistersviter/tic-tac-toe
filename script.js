@@ -110,6 +110,7 @@ function winCheck(player) {
 
 closePopup.onclick = function() {
     winPopup.style.display = "none";
+    //fieldElements.parentNode.replaceChild(fieldElements.cloneNode(false), fieldElements);
   }
   
   window.onclick = function(event) {
