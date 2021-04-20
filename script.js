@@ -5,6 +5,10 @@
     const fieldElements = document.querySelectorAll('.svg-container');
     const fieldSize = fieldElements.length;
     const fieldLength = Math.sqrt(fieldSize);
+    const winPopup = document.querySelector('.win-popup');
+    const popupContent = document.querySelector('.popup-content');
+    const closePopup = document.querySelector('.close-popup');
+    const winMessage = document.querySelector('.win-message');
     let row = 0;
     let column = -1;
     let rowCounter = -1;
@@ -91,13 +95,25 @@ function winCheck(player) {
         } 
         diagonalsMainSum += cellValueArray[i][i];
         diagonalsSecondarySum += cellValueArray[i][cellValueArray.length-i-1];     
-        if (rowSum == crossWins || diagonalsMainSum == crossWins || diagonalsSecondarySum == crossWins || columnSum == crossWins) {            
-            alert('Player1 WIN');
+        if (rowSum == crossWins || diagonalsMainSum == crossWins || diagonalsSecondarySum == crossWins || columnSum == crossWins) {     
+            winMessage.innerHTML = 'Player1 win the game. Congratulations!';   
+            winPopup.style.display = 'block';
             break;
         }
-        if (rowSum == zeroWins || diagonalsMainSum == zeroWins || diagonalsSecondarySum == zeroWins || columnSum == zeroWins) {            
-            alert('Player2 WIN');  
+        if (rowSum == zeroWins || diagonalsMainSum == zeroWins || diagonalsSecondarySum == zeroWins || columnSum == zeroWins) {     
+            winMessage.innerHTML = 'Player2 win the game. Congratulations!';        
+            winPopup.style.display = 'block'; 
             break;
         }    
     }  
 }
+
+closePopup.onclick = function() {
+    winPopup.style.display = "none";
+  }
+  
+  window.onclick = function(event) {
+    if (event.target == winPopup) {
+        winPopup.style.display = "none";
+    }
+  }
