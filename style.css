@@ -40,7 +40,11 @@ body {
   width: var(--size);
   height: var(--size);
 }
-.win-popup {
+.svg-container {
+  width: 100%;
+  height: 100%;
+}
+.popup {
   display: none;
   position: fixed;
   z-index: 1;
@@ -62,7 +66,7 @@ body {
 }
 .win-message {
   text-transform: uppercase;
-  font-weight: 700;
+  font-weight: 500;
 }
 .close-popup {
   color: #aaa;

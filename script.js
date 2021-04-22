@@ -1,32 +1,21 @@
     let playerCounter = 0;
-    const clickSound = document.querySelector('.clickSound')
-    const cell = document.querySelector('.cell');
-    const cellSize = cell.offsetWidth;
-    const fieldElements = document.querySelectorAll('.svg-container');
-    const fieldSize = fieldElements.length;
-    const fieldLength = Math.sqrt(fieldSize);
+    const clickSound = document.querySelector('.clickSound');
+    const gameField = document.querySelector('.game-field');
+    const menuPopup = document.querySelector('.menu-popup');
+    const gameFieldColumnsNumber = document.getElementById('columns-number');
+    const fieldSizeSelector = document.getElementById('field-size-selector');
+    const multiplyBy = document.querySelector('.multiply-by');
+    const playBtn = document.getElementById('play-btn');
     const winPopup = document.querySelector('.win-popup');
     const popupContent = document.querySelector('.popup-content');
     const closePopup = document.querySelector('.close-popup');
     const winMessage = document.querySelector('.win-message');
-    let row = 0;
-    let column = -1;
-    let rowCounter = -1;
-    let cellValueArray = new Array(fieldLength).fill(0).map(() => new Array(fieldLength).fill(0));
-    for (let i = 0; i < fieldSize; i++) {
-        rowCounter += 1;
-        column += 1;
-        if (rowCounter == fieldLength) {
-            rowCounter = 0;
-            row += 1;
-        }
-        if (column == fieldLength) {
-            column = 0;
-        }
-        fieldElements[i].dataset.row = row; 
-        fieldElements[i].dataset.column = column;
-        cellValueArray[row][column] = fieldElements[i].dataset.value 
-    }
+    let cellValueArray = [];
+    let cell = null;
+    let cellSize = null;
+    document.addEventListener("DOMContentLoaded", () => {
+        menuPopup.style.display = 'block';
+      });
     document.addEventListener('click', e => {
     const parent = e.target;
     let player;
@@ -36,15 +25,12 @@
         clickSound.play();
         if (player == 'player1') {
         drawCross(parent, cellSize);
-        parent.dataset.value = "cross"
         cellValueArray[parent.dataset.row][parent.dataset.column] = "cross"
         } else {
         drawZero(parent, cellSize);
-        parent.dataset.value = "zero"
         cellValueArray[parent.dataset.row][parent.dataset.column] = "zero"
         }
         parent.classList.add('used');
-        cellValueArray.push()
         playerCounter += 1;
         winCheck(player);
     }
@@ -82,8 +68,8 @@ function winCheck(player) {
     let rowSum;
     const crossStr = 'cross';
     const zeroStr = 'zero';
-    const crossWins = crossStr.repeat(fieldLength);
-    const zeroWins = zeroStr.repeat(fieldLength);  
+    const crossWins = crossStr.repeat(fieldSizeSelector.value);
+    const zeroWins = zeroStr.repeat(fieldSizeSelector.value);  
     let diagonalsMainSum = '';
     let diagonalsSecondarySum = '';
     for (let i = 0; i < cellValueArray.length; i++) {
@@ -94,9 +80,10 @@ function winCheck(player) {
             columnSum += cellValueArray[j][i];
         } 
         diagonalsMainSum += cellValueArray[i][i];
-        diagonalsSecondarySum += cellValueArray[i][cellValueArray.length-i-1];     
+        diagonalsSecondarySum += cellValueArray[i][cellValueArray.length-i-1];    
+        console.log(rowSum); 
         if (rowSum == crossWins || diagonalsMainSum == crossWins || diagonalsSecondarySum == crossWins || columnSum == crossWins) {     
-            winMessage.innerHTML = 'Player1 win the game. Congratulations!';   
+            winMessage.innerHTML = '<h2>Player1</h2> win the game. Congratulations!';   
             winPopup.style.display = 'block';
             break;
         }
@@ -117,4 +104,52 @@ closePopup.onclick = function() {
     if (event.target == winPopup) {
         winPopup.style.display = "none";
     }
+  }
+
+  fieldSizeSelector.addEventListener('input', function () {
+    let fieldSize = fieldSizeSelector.value;
+    gameFieldColumnsNumber.innerHTML = fieldSize;
+    multiplyBy.innerHTML = `&times; ${fieldSize}`;
+    let columnsVar = `repeat(${fieldSize}, 1fr)`;
+    gameField.style.gridTemplateColumns = columnsVar;
+    return fieldSize;
+  }, false);
+
+  playBtn.onclick = function() {
+    menuPopup.style.display = "none";
+    let row = 0;
+    let column = -1;
+    let rowCounter = -1;
+    let i = 0;
+    let fieldElements = document.querySelectorAll('.svg-container');
+    while (i < Math.pow(fieldSizeSelector.value, 2)) {
+        let cell = document.createElement('div');
+        cell.classList.add('cell');
+        rowCounter += 1;
+        column += 1;
+        if (rowCounter == fieldSizeSelector.value) {
+            rowCounter = 0;
+            row += 1;
+        }
+        if (column == fieldSizeSelector.value) {
+            column = 0;
+        }
+        cell.innerHTML = `<svg class="svg-container" data-value="none" data-row="${row}" data-column="${column}"></svg>`;
+        gameField.appendChild(cell);
+        i++;
+    }
+    cell = document.querySelector('.cell');
+    cellSize = cell.offsetWidth;
+    let j = 0;
+    let k = 0;
+    while (j < fieldSizeSelector.value) {
+        k = 0;
+        cellValueArray.push([]);
+        while (k < fieldSizeSelector.value) {
+            cellValueArray[j].push(['none']);
+            k++;
+        }
+    j++;
+    }
+    console.log(cellValueArray)
   }
