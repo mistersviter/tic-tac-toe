@@ -59,7 +59,7 @@ function drawZero(parent, cellSize) {
     zero.setAttribute("cx", (cellSize/2));
     zero.setAttribute("cy", (cellSize/2));
     zero.setAttribute("r", ((cellSize * 0.6)/2));
-    zero.setAttribute("stroke", "#8b00ff");
+    zero.setAttribute("stroke", "#ADFF2F");
     zero.setAttribute("fill", "none");
     zero.setAttribute("stroke-width", "8px");
     parent.append(zero);
@@ -88,7 +88,7 @@ function winCheck(player) {
             break;
         }
         if (rowSum == zeroWins || diagonalsMainSum == zeroWins || diagonalsSecondarySum == zeroWins || columnSum == zeroWins) {     
-            winMessage.innerHTML = 'Player2 win the game. Congratulations!';        
+            winMessage.innerHTML = '<h2>Player2</h2> win the game. Congratulations!';        
             winPopup.style.display = 'block'; 
             break;
         }    
