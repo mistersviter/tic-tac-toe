@@ -47,14 +47,21 @@ body {
   display: none;
   position: fixed;
   z-index: 1;
-  padding-top: calc(50vh - 100px);
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgb(0, 0, 0);
+}
+.menu-popup {
+  padding-top: calc(50vh - 100px);
   background-color: rgba(0, 0, 0, 0.8);
+}
+.win-popup {
+  background-color: rgba(0, 0, 0, 0.4);
+}
+.draw-popup {
+  background-color: rgba(0, 0, 0, 0.4);
 }
 .popup-content {
   background-color: #fefefe;
@@ -70,12 +77,18 @@ body {
 .popup-content hr {
   margin: 20px 0;
 }
+.popup-content input {
+  display: block;
+}
+#player1-name {
+  margin-bottom: 5px;
+}
 .win-message {
   text-transform: uppercase;
 }
 
 .btns {
-  display: block;
+  display: inline-block;
   cursor: pointer;
   width: 100px;
   height: 30px;
@@ -89,15 +102,6 @@ body {
 .btns:focus {
   background-color: #aaa;
   color: #000;
-}
-.flat-icon {
-  position: fixed;
-  bottom: 0;
-  color: #fff;
-}
-.flat-icon a {
-  text-decoration: none;
-  color: #fff;
 }
 
 input[type="range"] {
