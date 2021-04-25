@@ -7,9 +7,13 @@ const fieldSizeSelector = document.getElementById("field-size-selector");
 const multiplyBy = document.querySelector(".multiply-by");
 const playBtn = document.getElementById("play-btn");
 const winPopup = document.querySelector(".win-popup");
-const popupContent = document.querySelector(".popup-content");
-const closePopup = document.querySelector(".close-popup");
 const winMessage = document.querySelector(".win-message");
+const restartBtns = document.querySelectorAll(".restart-btn");
+const drawPopup = document.querySelector(".draw-popup");
+const player1NameForm = document.getElementById("player1-name");
+const player2NameForm = document.getElementById("player2-name");
+let player1Name = "Player1";
+let player2Name = "Player2";
 const cellValueArray = [];
 let cell;
 let cellSize;
@@ -19,14 +23,16 @@ let winner;
 let fieldSize = fieldSizeSelector.value;
 let fieldElementsNumber = Math.pow(fieldSizeSelector.value, 2);
 let fieldElements;
+let playerNow;
 
 document.addEventListener("DOMContentLoaded", () => {
-  menuPopup.style.display = "block";
+  menuPopup.style = "display: block";
+  addEventsToRestartBtns();
 });
+
 function mainFunction(e) {
   const clickedCell = e.target;
-  let player;
-  player = playerCounter % 2 ? "player2" : "player1";
+  playerNow = playerCounter % 2 ? player2Name : player1Name;
   if (
     cellValueArray[clickedCell.dataset.row][clickedCell.dataset.column] ==
       "none" &&
@@ -34,7 +40,7 @@ function mainFunction(e) {
   ) {
     clickSound.currentTime = 0;
     clickSound.play();
-    if (player == "player1") {
+    if (playerNow == player1Name) {
       drawCross(clickedCell, cellSize);
       cellValueArray[clickedCell.dataset.row][clickedCell.dataset.column] =
         "cross";
@@ -44,7 +50,7 @@ function mainFunction(e) {
         "zero";
     }
     playerCounter += 1;
-    winCheck(player);
+    winCheck(playerNow);
     drawCheck();
   }
 }
@@ -83,7 +89,7 @@ function drawZero(clickedCell, cellSize) {
   zero.setAttribute("stroke-width", "8px");
   clickedCell.append(zero);
 }
-function winCheck(player) {
+function winCheck(playerNow) {
   let rowSum;
   const crossStr = "cross";
   const zeroStr = "zero";
@@ -106,9 +112,9 @@ function winCheck(player) {
       diagonalsSecondarySum == crossWins ||
       columnSum == crossWins
     ) {
-      winner = "Player1";
-      winMessage.innerHTML = "<h2>Player1</h2> win the game. Congratulations!";
-      winPopup.style.display = "block";
+      winner = playerNow;
+      winMessage.innerHTML = `<h2>${playerNow}</h2> win the game. Congratulations!`;
+      winPopup.style = "display: block";
       break;
     }
     if (
@@ -117,9 +123,9 @@ function winCheck(player) {
       diagonalsSecondarySum == zeroWins ||
       columnSum == zeroWins
     ) {
-      winner = "Player2";
-      winMessage.innerHTML = "<h2>Player2</h2> win the game. Congratulations!";
-      winPopup.style.display = "block";
+      winner = playerNow;
+      winMessage.innerHTML = `<h2>${playerNow}</h2> win the game. Congratulations!`;
+      winPopup.style = "display: block";
       break;
     }
   }
@@ -128,19 +134,20 @@ function winCheck(player) {
 function drawCheck() {
   const flatCellValueArray = cellValueArray.flat();
   const gotFreeCells = flatCellValueArray.some((element) => element == "none");
-  if (!gotFreeCells && !winner) alert("Ничья");
+  if (!gotFreeCells && !winner) drawPopup.style = "display: block";
 }
 
-closePopup.addEventListener("click", () => {
-  winPopup.style.display = "none";
+function restartBtnClick() {
+  winPopup.style = "display: none";
+  drawPopup.style = "display: none";
   restart();
-});
+}
 
-window.addEventListener("click", (event) => {
-  if (event.target == winPopup) {
-    winPopup.style.display = "none";
-  }
-});
+// window.addEventListener("click", (event) => {
+//   if (event.target == winPopup) {
+//     winPopup.style.display = "none";
+//   }
+// });
 
 fieldSizeSelector.addEventListener("input", function () {
   fieldSize = fieldSizeSelector.value;
@@ -187,14 +194,23 @@ playBtn.addEventListener("click", () => {
   }
   getNewSvgContainers();
   addEventsToSvgContainers();
+  if (player1NameForm.value) player1Name = player1NameForm.value;
+  if (player2NameForm.value) player2Name = player2NameForm.value;
 });
 
 function getNewSvgContainers() {
   fieldElements = document.querySelectorAll(".svg-container");
 }
+
 function addEventsToSvgContainers() {
   fieldElements.forEach((element) =>
     element.addEventListener("click", mainFunction)
+  );
+}
+
+function addEventsToRestartBtns() {
+  restartBtns.forEach((element) =>
+    element.addEventListener("click", restartBtnClick)
   );
 }
 

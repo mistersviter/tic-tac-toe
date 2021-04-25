@@ -11,11 +11,16 @@
       href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap"
       rel="stylesheet"
     />
+    <link rel="icon" href="assets/favicon.svg" type="image/x-icon" />
   </head>
   <body>
     <div class="menu-popup popup">
       <div class="popup-content">
-        <p class="choose-message">Choose size of field</p>
+        <p class="enter-names">Enter your names:</p>
+        <input id="player1-name" placeholder="Player1" type="text" />
+        <input id="player2-name" placeholder="Player2" type="text" />
+        <hr />
+        <p class="choose-message">Choose size of field:</p>
         <p>
           <span id="columns-number">3</span>
           <span class="multiply-by">&times; 3</span>
@@ -27,13 +32,23 @@
           value="3"
           type="range"
         />
-        <button class="play-btn" id="play-btn" type="button">Play</button>
+        <button class="play-btn btns" id="play-btn" type="button">Play</button>
       </div>
     </div>
     <div class="win-popup popup">
       <div class="popup-content">
-        <span class="close-popup">&times;</span>
         <p class="win-message">win the game. congratulations!</p>
+        <button class="restart-btn btns" id="restart-btn" type="button">
+          Restart
+        </button>
+      </div>
+    </div>
+    <div class="draw-popup popup">
+      <div class="popup-content">
+        <p class="draw-message">The game ended in a draw</p>
+        <button class="restart-btn btns" id="restart-btn" type="button">
+          Restart
+        </button>
       </div>
     </div>
     <div class="game-container">

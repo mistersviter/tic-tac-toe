@@ -62,29 +62,19 @@ body {
   padding: 20px;
   border: 1px solid #888;
   width: 50%;
+  font-weight: 500;
 }
 .popup-content p {
   margin: 0 0 15px 0;
 }
+.popup-content hr {
+  margin: 20px 0;
+}
 .win-message {
   text-transform: uppercase;
-  font-weight: 500;
-}
-.close-popup {
-  color: #aaa;
-  float: right;
-  font-size: 35px;
-  font-weight: bold;
 }
 
-.close-popup:hover,
-.close-popup:focus {
-  color: #000;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.play-btn {
+.btns {
   display: block;
   cursor: pointer;
   width: 100px;
@@ -95,10 +85,19 @@ body {
   margin-top: 15px;
 }
 
-.play-btn:hover,
-.play-btn:focus {
+.btns:hover,
+.btns:focus {
   background-color: #aaa;
   color: #000;
+}
+.flat-icon {
+  position: fixed;
+  bottom: 0;
+  color: #fff;
+}
+.flat-icon a {
+  text-decoration: none;
+  color: #fff;
 }
 
 input[type="range"] {
