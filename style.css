@@ -54,7 +54,7 @@ body {
   overflow: auto;
 }
 .menu-popup {
-  padding-top: calc(50vh - 100px);
+  padding-top: calc(50vh - 200px);
   background-color: rgba(0, 0, 0, 0.8);
 }
 .win-popup {
@@ -69,10 +69,14 @@ body {
   padding: 20px;
   border: 1px solid #888;
   width: 50%;
-  font-weight: 500;
 }
 .popup-content p {
   margin: 0 0 15px 0;
+  font-weight: 500;
+  font-size: 16px;
+}
+.popup-content span {
+  font-size: 14px;
 }
 .popup-content hr {
   margin: 20px 0;
@@ -190,4 +194,40 @@ how to remove the virtical space around the range input in IE*/
     margin: 0;
     /*Edge starts the margin from the thumb, not the track as other browsers do*/
   }
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 20px;
+  background-color: rgba(0, 0, 0, 0.25);
+  transition: all 0.3s;
+  cursor: pointer;
+  margin-left: 10px;
+}
+.switch::after {
+  content: "";
+  position: absolute;
+  width: 19px;
+  height: 18px;
+  background-color: white;
+  top: 1px;
+  left: 1px;
+  transition: all 0.3s;
+}
+
+.checkbox:checked + .switch::after {
+  left: 20px;
+}
+.checkbox:checked + .switch {
+  background-color: #2c2c2c;
+}
+#toggle {
+  display: none;
+}
+
+.select-mode-content {
+  display: flex;
+  align-items: center;
 }
