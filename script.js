@@ -110,28 +110,29 @@ function winCheck(playerNow) {
     diagonalsMainSum += cellValueArray[i][i];
     diagonalsSecondarySum += cellValueArray[i][cellValueArray.length - i - 1];
     if (
-      rowSum == crossWins ||
       diagonalsMainSum == crossWins ||
       diagonalsSecondarySum == crossWins ||
-      columnSum == crossWins
+      diagonalsMainSum == zeroWins ||
+      diagonalsSecondarySum == zeroWins
     ) {
-      winner = playerNow;
-      winMessage.innerHTML = `<h2>${playerNow}</h2> win the game. Congratulations!`;
-      winPopup.style = "display: block";
+      gotWinner(playerNow);
       break;
     }
     if (
+      rowSum == crossWins ||
+      columnSum == crossWins ||
       rowSum == zeroWins ||
-      diagonalsMainSum == zeroWins ||
-      diagonalsSecondarySum == zeroWins ||
       columnSum == zeroWins
     ) {
-      winner = playerNow;
-      winMessage.innerHTML = `<h2>${playerNow}</h2> win the game. Congratulations!`;
-      winPopup.style = "display: block";
+      gotWinner(playerNow);
       break;
     }
   }
+}
+function gotWinner(playerNow) {
+  winner = playerNow;
+  winMessage.innerHTML = `<h2>${playerNow}</h2> win the game. Congratulations!`;
+  winPopup.style = "display: block";
 }
 
 function drawCheck() {
@@ -168,8 +169,7 @@ function createNewGameField() {
   let row = 0;
   let column = -1;
   let rowCounter = -1;
-  let i = 0;
-  while (i < fieldElementsNumber) {
+  for (let i = 0; i < fieldElementsNumber; i++) {
     cell = document.createElement("div");
     cell.classList.add("cell");
     rowCounter += 1;
@@ -183,22 +183,17 @@ function createNewGameField() {
     }
     cell.innerHTML = `<svg class="svg-container" data-row="${row}" data-column="${column}"></svg>`;
     gameField.appendChild(cell);
-    i++;
   }
 }
 
 function createNewCellValueArray() {
   cellValueArray = [];
-  let j = 0;
   let k = 0;
-  while (j < fieldSize) {
-    k = 0;
+  for (let j = 0; j < fieldSize; j++) {
     cellValueArray.push([]);
-    while (k < fieldSize) {
+    for (let k = 0; k < fieldSize; k++) {
       cellValueArray[j].push("none");
-      k++;
     }
-    j++;
   }
 }
 
