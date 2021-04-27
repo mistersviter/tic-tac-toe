@@ -20,8 +20,12 @@ body {
 }
 .game-container {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+}
+.player-now-info {
+  color: #fff;
 }
 .game-field {
   display: grid;
@@ -230,4 +234,10 @@ how to remove the virtical space around the range input in IE*/
 .select-mode-content {
   display: flex;
   align-items: center;
+}
+
+@media only screen and (max-width: 440px) {
+  .popup-content {
+    width: 100%;
+  }
 }

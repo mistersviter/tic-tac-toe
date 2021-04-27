@@ -1,4 +1,3 @@
-let playerCounter = 0;
 const clickSound = document.querySelector(".clickSound");
 const gameField = document.querySelector(".game-field");
 const menuPopup = document.querySelector(".menu-popup");
@@ -13,8 +12,11 @@ const newGameBtns = document.querySelectorAll(".new-game-btn");
 const drawPopup = document.querySelector(".draw-popup");
 const player1NameForm = document.getElementById("player1-name");
 const player2NameForm = document.getElementById("player2-name");
-let player1Name = "Player1";
-let player2Name = "Player2";
+const gameModeButton = document.getElementById("toggle");
+const playerNowInfo = document.querySelector(".player-now-info");
+let pvpMode;
+let player1Name;
+let player2Name;
 let cellValueArray = [];
 let cell;
 let cellSize;
@@ -25,6 +27,8 @@ let fieldSize = fieldSizeSelector.value;
 let fieldElementsNumber = Math.pow(fieldSizeSelector.value, 2);
 let fieldElements;
 let playerNow;
+let crossPlayer;
+let zeroPlayer;
 
 document.addEventListener("DOMContentLoaded", () => {
   menuPopup.style = "display: block";
@@ -34,28 +38,32 @@ document.addEventListener("DOMContentLoaded", () => {
 
 function mainFunction(e) {
   const clickedCell = e.target;
-  playerNow = playerCounter % 2 ? player2Name : player1Name;
-  if (
-    cellValueArray[clickedCell.dataset.row][clickedCell.dataset.column] ==
-      "none" &&
-    clickedCell.classList.contains("svg-container")
-  ) {
-    clickSound.currentTime = 0;
-    clickSound.play();
-    if (playerNow == player1Name) {
-      drawCross(clickedCell, cellSize);
-      cellValueArray[clickedCell.dataset.row][clickedCell.dataset.column] =
-        "cross";
-    } else {
-      drawZero(clickedCell, cellSize);
-      cellValueArray[clickedCell.dataset.row][clickedCell.dataset.column] =
-        "zero";
+  if (pvpMode) {
+    if (
+      cellValueArray[clickedCell.dataset.row][clickedCell.dataset.column] ==
+        "none" &&
+      clickedCell.classList.contains("svg-container")
+    ) {
+      clickSound.currentTime = 0;
+      clickSound.play();
+      if (playerNow == crossPlayer) {
+        drawCross(clickedCell, cellSize);
+        cellValueArray[clickedCell.dataset.row][clickedCell.dataset.column] =
+          "cross";
+      } else {
+        drawZero(clickedCell, cellSize);
+        cellValueArray[clickedCell.dataset.row][clickedCell.dataset.column] =
+          "zero";
+      }
+      winCheck(playerNow);
+      drawCheck();
+      playerNow = playerNow == crossPlayer ? zeroPlayer : crossPlayer;
+      displayPlayerNow(playerNow);
     }
-    playerCounter += 1;
-    winCheck(playerNow);
-    drawCheck();
+  } else {
   }
 }
+
 function drawCross(clickedCell, cellSize) {
   const firstLine = document.createElementNS(
     "http://www.w3.org/2000/svg",
@@ -81,6 +89,7 @@ function drawCross(clickedCell, cellSize) {
   secondLine.setAttribute("stroke-width", "8px");
   clickedCell.append(secondLine);
 }
+
 function drawZero(clickedCell, cellSize) {
   const zero = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   zero.setAttribute("cx", cellSize / 2);
@@ -91,6 +100,7 @@ function drawZero(clickedCell, cellSize) {
   zero.setAttribute("stroke-width", "8px");
   clickedCell.append(zero);
 }
+
 function winCheck(playerNow) {
   let rowSum;
   let columnSum;
@@ -129,6 +139,7 @@ function winCheck(playerNow) {
     }
   }
 }
+
 function gotWinner(playerNow) {
   winner = playerNow;
   winMessage.innerHTML = `<h2>${playerNow}</h2> win the game. Congratulations!`;
@@ -207,15 +218,30 @@ fieldSizeSelector.addEventListener("input", function () {
 playBtn.addEventListener("click", () => {
   menuPopup.style.display = "none";
   gameField.style = `grid-template-columns: repeat(${fieldSize}, 1fr)`;
+  pvpMode = gameModeButton.checked;
   createNewGameField();
   cell = document.querySelector(".cell");
   cellSize = cell.offsetWidth;
   createNewCellValueArray();
   getNewSvgContainers();
   addEventsToSvgContainers();
-  if (player1NameForm.value) player1Name = player1NameForm.value;
-  if (player2NameForm.value) player2Name = player2NameForm.value;
+  if (player1NameForm.value) {
+    player1Name = player1NameForm.value;
+  } else {
+    player1Name = "Player1";
+  }
+  if (player2NameForm.value) {
+    player2Name = player2NameForm.value;
+  } else {
+    player2Name = "Player2";
+  }
+  selectFirstPlayer();
+  displayPlayerNow(playerNow);
 });
+
+function displayPlayerNow(playerNow) {
+  if (!winner) playerNowInfo.innerHTML = `${playerNow} move`;
+}
 
 function getNewSvgContainers() {
   fieldElements = document.querySelectorAll(".svg-container");
@@ -252,4 +278,20 @@ function restart() {
   );
   getNewSvgContainers();
   addEventsToSvgContainers();
+  selectFirstPlayer();
+  displayPlayerNow(playerNow);
 }
+
+function selectFirstPlayer() {
+  const playerCounter = Math.floor(Math.random() * 2);
+  if (playerCounter == 0) {
+    crossPlayer = player1Name;
+    zeroPlayer = player2Name;
+  } else {
+    crossPlayer = player2Name;
+    zeroPlayer = player1Name;
+  }
+  playerNow = crossPlayer;
+}
+
+function AImove() {}
