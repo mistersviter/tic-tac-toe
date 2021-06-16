@@ -363,10 +363,6 @@ function botMove() {
         const [row, col] = shuffleArray(freeCells)[0];
         setBotFigure(row, col);
       }
-      crossOrZero(selectedCell);
-      console.log("бот походил");
-      changePlayer();
-      displayPlayerNow();
     }
   }
 }
@@ -374,7 +370,10 @@ function botMove() {
 function botNextStepCalc(figure, count, noFillJustCheckIfItMatches) {
   function fillIfNone(row, col) {
     if (cellValueArray[row][col] === "none") {
-      if (!noFillJustCheckIfItMatches) return true;
+      if (!noFillJustCheckIfItMatches) {
+        setBotFigure(row, col);
+        return true;
+      }
     }
   }
   // horizontal
@@ -443,18 +442,20 @@ function shuffleArray(array) {
 }
 
 function setBotFigure(row, pos) {
-  let counter;
-  let gotElementNumber;
-  counter = 0;
-  for (let x = 0; x < fieldSize; x++) {
+  let counter = -1;
+  loop1: for (let x = 0; x < fieldSize; x++) {
     for (let y = 0; y < fieldSize; y++) {
       counter++;
-      if (cellValueArray[x][y] == cellValueArray[row][pos]) {
-        break;
+      if (x === row && y === pos) {
+        selectedCell = fieldElements[counter];
+        break loop1;
       }
     }
   }
-  selectedCell = fieldElements[counter];
+  crossOrZero(selectedCell);
+  console.log("бот походил");
+  changePlayer();
+  displayPlayerNow();
 }
 
 function changePlayer() {
