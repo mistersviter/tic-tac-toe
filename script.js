@@ -29,6 +29,21 @@ let fieldElements;
 let playerNow;
 let crossPlayer;
 let zeroPlayer;
+let botFigure;
+let playerFigure;
+let selectedCell;
+const botPlayerNameArray = [
+  "Johnny Cage",
+  "Kano",
+  "Liu Kang",
+  "Raiden",
+  "Scorpion",
+  "Sonya Blade",
+  "Sub-Zero",
+  "Goro",
+  "Shang Tsung",
+  "Reptile",
+];
 
 document.addEventListener("DOMContentLoaded", () => {
   menuPopup.style = "display: block";
@@ -36,35 +51,48 @@ document.addEventListener("DOMContentLoaded", () => {
   addEventsToNewGameBtns();
 });
 
-function mainFunction(e) {
-  const clickedCell = e.target;
+function clickOnCell(e) {
+  selectedCell = e.target;
+  clickSound.currentTime = 0;
+  clickSound.play();
   if (pvpMode) {
-    if (
-      cellValueArray[clickedCell.dataset.row][clickedCell.dataset.column] ==
-        "none" &&
-      clickedCell.classList.contains("svg-container")
-    ) {
-      clickSound.currentTime = 0;
-      clickSound.play();
-      if (playerNow == crossPlayer) {
-        drawCross(clickedCell, cellSize);
-        cellValueArray[clickedCell.dataset.row][clickedCell.dataset.column] =
-          "cross";
-      } else {
-        drawZero(clickedCell, cellSize);
-        cellValueArray[clickedCell.dataset.row][clickedCell.dataset.column] =
-          "zero";
-      }
-      winCheck(playerNow);
-      drawCheck();
-      playerNow = playerNow == crossPlayer ? zeroPlayer : crossPlayer;
-      displayPlayerNow(playerNow);
-    }
+    crossOrZero();
+    winCheck();
+    drawCheck();
+    changePlayer();
+    displayPlayerNow();
   } else {
+    if (playerNow != botPlayerName) {
+      crossOrZero();
+      winCheck();
+      drawCheck();
+      changePlayer();
+      displayPlayerNow();
+      botMove();
+      winCheck();
+      drawCheck();
+    }
   }
 }
 
-function drawCross(clickedCell, cellSize) {
+function crossOrZero() {
+  if (
+    cellValueArray[selectedCell.dataset.row][selectedCell.dataset.column] ==
+    "none"
+  ) {
+    if (playerNow == crossPlayer) {
+      drawCross(cellSize);
+      cellValueArray[selectedCell.dataset.row][selectedCell.dataset.column] =
+        "cross";
+    } else {
+      drawZero(cellSize);
+      cellValueArray[selectedCell.dataset.row][selectedCell.dataset.column] =
+        "zero";
+    }
+  }
+}
+
+function drawCross(cellSize) {
   const firstLine = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "line"
@@ -76,7 +104,7 @@ function drawCross(clickedCell, cellSize) {
   firstLine.setAttribute("y2", (cellSize - crossSize) / 2);
   firstLine.setAttribute("stroke", "#8b00ff");
   firstLine.setAttribute("stroke-width", "8px");
-  clickedCell.append(firstLine);
+  selectedCell.append(firstLine);
   const secondLine = document.createElementNS(
     "http://www.w3.org/2000/svg",
     "line"
@@ -87,10 +115,10 @@ function drawCross(clickedCell, cellSize) {
   secondLine.setAttribute("y2", (cellSize - crossSize) / 2 + crossSize);
   secondLine.setAttribute("stroke", "#8b00ff");
   secondLine.setAttribute("stroke-width", "8px");
-  clickedCell.append(secondLine);
+  selectedCell.append(secondLine);
 }
 
-function drawZero(clickedCell, cellSize) {
+function drawZero(cellSize) {
   const zero = document.createElementNS("http://www.w3.org/2000/svg", "circle");
   zero.setAttribute("cx", cellSize / 2);
   zero.setAttribute("cy", cellSize / 2);
@@ -98,10 +126,10 @@ function drawZero(clickedCell, cellSize) {
   zero.setAttribute("stroke", "#ADFF2F");
   zero.setAttribute("fill", "none");
   zero.setAttribute("stroke-width", "8px");
-  clickedCell.append(zero);
+  selectedCell.append(zero);
 }
 
-function winCheck(playerNow) {
+function winCheck() {
   let rowSum;
   let columnSum;
   const crossStr = "cross";
@@ -120,29 +148,25 @@ function winCheck(playerNow) {
     diagonalsMainSum += cellValueArray[i][i];
     diagonalsSecondarySum += cellValueArray[i][cellValueArray.length - i - 1];
     if (
-      diagonalsMainSum == crossWins ||
-      diagonalsSecondarySum == crossWins ||
-      diagonalsMainSum == zeroWins ||
-      diagonalsSecondarySum == zeroWins
+      [diagonalsMainSum, diagonalsSecondarySum].includes(crossWins) ||
+      [diagonalsMainSum, diagonalsSecondarySum].includes(zeroWins)
     ) {
-      gotWinner(playerNow);
+      gotWinner();
       break;
     }
     if (
-      rowSum == crossWins ||
-      columnSum == crossWins ||
-      rowSum == zeroWins ||
-      columnSum == zeroWins
+      [rowSum, columnSum].includes(crossWins) ||
+      [rowSum, columnSum].includes(zeroWins)
     ) {
-      gotWinner(playerNow);
+      gotWinner();
       break;
     }
   }
 }
 
-function gotWinner(playerNow) {
+function gotWinner() {
   winner = playerNow;
-  winMessage.innerHTML = `<h2>${playerNow}</h2> win the game. Congratulations!`;
+  winMessage.innerHTML = `<h2>${playerNow}</h2> won the game. Congratulations!`;
   winPopup.style = "display: block";
 }
 
@@ -169,12 +193,6 @@ function newGameBtnClick() {
   cellsArray.forEach((element) => element.remove());
   restart();
 }
-
-// window.addEventListener("click", (event) => {
-//   if (event.target == winPopup) {
-//     winPopup.style.display = "none";
-//   }
-// });
 
 function createNewGameField() {
   let row = 0;
@@ -236,10 +254,11 @@ playBtn.addEventListener("click", () => {
     player2Name = "Player2";
   }
   selectFirstPlayer();
-  displayPlayerNow(playerNow);
+  displayPlayerNow();
+  botMove();
 });
 
-function displayPlayerNow(playerNow) {
+function displayPlayerNow() {
   if (!winner) playerNowInfo.innerHTML = `${playerNow} move`;
 }
 
@@ -249,7 +268,7 @@ function getNewSvgContainers() {
 
 function addEventsToSvgContainers() {
   fieldElements.forEach((element) =>
-    element.addEventListener("click", mainFunction)
+    element.addEventListener("click", clickOnCell)
   );
 }
 
@@ -279,19 +298,165 @@ function restart() {
   getNewSvgContainers();
   addEventsToSvgContainers();
   selectFirstPlayer();
-  displayPlayerNow(playerNow);
+  displayPlayerNow();
+  botMove();
 }
 
 function selectFirstPlayer() {
   const playerCounter = Math.floor(Math.random() * 2);
-  if (playerCounter == 0) {
-    crossPlayer = player1Name;
-    zeroPlayer = player2Name;
+  if (pvpMode) {
+    if (playerCounter == 0) {
+      crossPlayer = player1Name;
+      zeroPlayer = player2Name;
+    } else {
+      crossPlayer = player2Name;
+      zeroPlayer = player1Name;
+    }
   } else {
-    crossPlayer = player2Name;
-    zeroPlayer = player1Name;
+    if (playerCounter == 0) {
+      crossPlayer = player1Name;
+      botPlayerName =
+        botPlayerNameArray[
+          Math.floor(Math.random() * botPlayerNameArray.length)
+        ];
+      zeroPlayer = botPlayerName;
+      playerFigure = "cross";
+      botFigure = "zero";
+    } else {
+      botPlayerName =
+        botPlayerNameArray[
+          Math.floor(Math.random() * botPlayerNameArray.length)
+        ];
+      crossPlayer = botPlayerName;
+      zeroPlayer = player1Name;
+      playerFigure = "cross";
+      botFigure = "cross";
+    }
   }
   playerNow = crossPlayer;
 }
 
-function AImove() {}
+function botMove() {
+  if (!pvpMode) {
+    if (playerNow == botPlayerName) {
+      if (botNextStepCalc(botFigure, fieldSize - 1)) return;
+      if (botNextStepCalc(playerFigure, fieldSize - 1)) return;
+      for (
+        let botFiguresInRow = fieldSize - 1;
+        botFiguresInRow > 0;
+        botFiguresInRow--
+      ) {
+        if (
+          botNextStepCalc(playerFigure, 0, true) &&
+          botNextStepCalc(botFigure, botFiguresInRow)
+        )
+          return;
+      }
+      // 4) Если ничего не подошло, то ставим в любую рандомную свободную клетку
+      const freeCells = [];
+      for (let row = 0; row < fieldSize; row++) {
+        for (let col = 0; col < fieldSize; col++) {
+          if (cellValueArray[row][col] === "none") freeCells.push([row, col]);
+        }
+      }
+      if (freeCells.length) {
+        const [row, col] = shuffleArray(freeCells)[0];
+        setBotFigure(row, col);
+      }
+      crossOrZero(selectedCell);
+      console.log("бот походил");
+      changePlayer();
+      displayPlayerNow();
+    }
+  }
+}
+
+function botNextStepCalc(figure, count, noFillJustCheckIfItMatches) {
+  function fillIfNone(row, col) {
+    if (cellValueArray[row][col] === "none") {
+      if (!noFillJustCheckIfItMatches) return true;
+    }
+  }
+  // horizontal
+  for (let row = 0; row < fieldSize; row++) {
+    let horizontalCount = 0;
+    for (let col = 0; col < fieldSize; col++) {
+      if (cellValueArray[row][col] === figure) horizontalCount++;
+    }
+    if (horizontalCount === count)
+      for (let col = 0; col < fieldSize; col++) {
+        if (fillIfNone(row, col)) return true;
+      }
+  }
+  // vertical
+  for (let col = 0; col < fieldSize; col++) {
+    let verticalCount = 0;
+    for (let row = 0; row < fieldSize; row++) {
+      if (cellValueArray[row][col] === figure) verticalCount++;
+    }
+    if (verticalCount === count)
+      for (let row = 0; row < fieldSize; row++) {
+        if (fillIfNone(row, col)) return true;
+      }
+  }
+  // diagonal 1
+  let leftTopToRightBottomCount = 0;
+  for (let both = 0; both < fieldSize; both++) {
+    if (cellValueArray[both][both] === figure) leftTopToRightBottomCount++;
+  }
+  if (leftTopToRightBottomCount === count)
+    for (let both = 0; both < fieldSize; both++) {
+      if (fillIfNone(both, both)) return true;
+    }
+
+  // diagonal 2
+  let rightTopToLeftBottomCount = 0;
+  for (
+    let row = 0, col = fieldSize - 1;
+    row < fieldSize && col >= 0;
+    row++, col--
+  ) {
+    if (cellValueArray[row][col] === figure) rightTopToLeftBottomCount++;
+  }
+  if (rightTopToLeftBottomCount === count)
+    for (
+      let row = 0, col = fieldSize - 1;
+      row < fieldSize && col >= 0;
+      row++, col--
+    ) {
+      if (fillIfNone(row, col)) return true;
+    }
+}
+
+function shuffleArray(array) {
+  let currentIndex = array.length,
+    temporaryValue,
+    randomIndex;
+  while (0 !== currentIndex) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex -= 1;
+    temporaryValue = array[currentIndex];
+    array[currentIndex] = array[randomIndex];
+    array[randomIndex] = temporaryValue;
+  }
+  return array;
+}
+
+function setBotFigure(row, pos) {
+  let counter;
+  let gotElementNumber;
+  counter = 0;
+  for (let x = 0; x < fieldSize; x++) {
+    for (let y = 0; y < fieldSize; y++) {
+      counter++;
+      if (cellValueArray[x][y] == cellValueArray[row][pos]) {
+        break;
+      }
+    }
+  }
+  selectedCell = fieldElements[counter];
+}
+
+function changePlayer() {
+  playerNow = playerNow == crossPlayer ? zeroPlayer : crossPlayer;
+}
